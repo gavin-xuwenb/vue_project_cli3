@@ -39,12 +39,13 @@ export default {
     submitLogin (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+		  sessionStorage.setItem('token', this.ruleForm.account)
           this.$message({
             message: '登陆成功',
             type: 'success',
             duration: 2000
           })
-					this.$router.push('/layout');
+		  this.$router.push('/layout');
         } else {
           console.log('error submit!!')
           return false

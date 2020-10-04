@@ -22,7 +22,10 @@ const routes = [
 {
 	path: '/login',
 	name: 'Login',
-	component: _import('Login')
+	component: _import('Login'),
+	meta: {
+	  requireAuth: false
+	}
 },
 { 
 	path: '/404',
@@ -49,6 +52,16 @@ const routes = [
 	},{
 		path: 'systemManage',
 		component: _import('systemManage/SystemMain')
+		// children: [{
+		// 	path: 'timeReset',
+		// 	component: _import('systemManage/TimeReset')
+		// },{
+		// 	path: 'remoteOpenDoor',
+		// 	component: _import('systemManage/RemoteOpenDoor')
+		// },{
+		// 	path: 'orderTest',
+		// 	component: _import('systemManage/OrderTest')
+		// }]
 	},{
 		path: 'authManage',
 		component: _import('authManage/AuthMain')
@@ -62,6 +75,33 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+	if (document.querySelector('.el-container')) {
+		document.querySelector('.el-container').scrollTop = 0
+	}
+  
+	if (to.path === '/login') {
+		next()
+	} else {
+		if (to.matched.some(record => record.meta.requireAuth)) { // 判断该路由是否需要登录权限
+			// 如果是一次登录长期（不关闭浏览器窗口）有效 ，则使用getToken() 进行登录判断
+			// 这里不能使用 this.$store.state 组件还没挂载 ，而因该用router.app.$store
+			if (sessionStorage.getItem('token')) {
+				next()
+			} else {
+				next({
+				  path: '/login',
+				  query: {
+					redirect: to.fullPath
+				  } // 将跳转的路由path作为参数，登录成功后跳转到该路由
+				})
+			}
+		} else {
+		    next()
+		}
+	}
 })
 
 export default router

@@ -1,43 +1,36 @@
 <template>
-  <div>
-		<!--
-    <div class="header_right">
-      <span>welcome,{{this.$store.state.user.userName}}</span>
-      <span class="el-icon-setting" @click="setFn"></span>
-      <span class="login-out" @click="logout">退出</span>
-    </div>
-		-->
-		
+	<div>
 		<div id="nav-1">
-		    <ul class="nav">
-		        <li class="slide1"></li>
-		        <li class="slide2"></li>
-		        <li><a class="active" href="javascript:void(0);" @click="userManage">人员管理</a></li>
-		        <li><a href="javascript:void(0);" @click="deviceManage">设备管理</a></li>
-		        <li><a href="javascript:void(0);" @click="authManage">权限管理</a></li>
-		        <li><a href="javascript:void(0);" @click="specialFunc">特殊功能</a></li>
-		        <li><a href="javascript:void(0);" @click="systemManage">系统管理</a></li>
-		    </ul>
+			<ul class="nav">
+				<li class="slide1"></li>
+				<li class="slide2"></li>
+				<li><a class="active" href="javascript:void(0);" @click="userManage">人员管理</a></li>
+				<li><a href="javascript:void(0);" @click="deviceManage">设备管理</a></li>
+				<li><a href="javascript:void(0);" @click="authManage">权限管理</a></li>
+				<li><a href="javascript:void(0);" @click="specialFunc">特殊功能</a></li>
+				<li><a href="javascript:void(0);" @click="systemManage">系统管理</a></li>
+			</ul>
 				
-				<div class="header_right">
-				  <span>welcome,</span>
-				  <a class="login-out" @click="logout">退出</a>
-				</div>
+			<div class="header_right">
+			  <span>welcome,{{userName}}</span>
+			  <a class="login-out" @click="logout">退出</a>
+			</div>
 		</div>
-  </div>
+	</div>
 </template>
 
 <script>
 import $ from 'jquery'
 export default {
-  name: 'HeaderBar',
-  data () {
-    return {
-    }
-  },
-  computed: {
+	name: 'HeaderBar',
+	data () {
+		return {
+			userName:''
+		}
+	},
+    computed: {
 		
-  },
+    },
 	methods: {
 		userManage () {
 			this.$router.push('/layout/userManage')
@@ -65,7 +58,8 @@ export default {
 	  setFn () {
 	  }
 	},
-  mounted () {
+    mounted () {
+		this.userName = sessionStorage.getItem('token')
 		$("#nav-1 a").on("click", function() {
 		    var position = $(this)
 		        .parent()
@@ -106,7 +100,7 @@ export default {
 		$("#nav-1 .slide1").css({ left: +current.left, width: currentWidth });
 		
 		this.$router.replace('/layout/userManage')
-  }
+    }
 }
 </script>
 <style scoped >
@@ -169,13 +163,26 @@ export default {
 .header_right {
 	position: relative;
 	float:right;
-	margin-top: -40px;
+	margin-top: -47px;
 	margin-right: 10px;
+	text-align: center;
 }
 
 .header_right a{
-	text-decoration: underline;
-	color:#006599;
+	width: 60px;
+	height: 20px;
+	line-height: 20px;
+	margin-left: 10px;
+	display: inline-block;
+	text-decoration: none;
+	background-color: #8AB9FF;
 	cursor: pointer;
+	border-radius:15px;
+	border-style: solid;
+	border-color: #13E8E9;
+}
+.header_right a:hover{
+	background-color: #B3C0D1;
+	color: red;
 }
 </style>
