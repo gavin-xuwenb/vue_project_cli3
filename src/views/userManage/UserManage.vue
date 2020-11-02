@@ -1,60 +1,62 @@
 <template>
 <div>
-    <div class="selectContainer">
-        <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <el-form-item label="姓名">
-                <el-input v-model="formInline.user" placeholder="姓名" ></el-input>
-            </el-form-item>
-            <el-form-item label="部门">
-                <el-select v-model="formInline.region" placeholder="选择部门" >
-                <el-option label="研发一部" value="1"></el-option>
-                <el-option label="研发二部" value="2"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="queryData" >查询</el-button>
-            </el-form-item>
-        </el-form>
-    </div>
-    <div v-if="tableData.length>0">
-      <div v-show="showTable" class="content" style="margin-top:20px">
-          <el-table ref="multipleTable"
-              tooltip-effect="dark"
-              @selection-change="handleSelectionChange"
-              :data="tableData" border style="width: 100%;" height="400">
-							<!--
-              <el-table-column fixed type="selection" width="55"></el-table-column>
-							-->
-              <el-table-column fixed prop="id" label="ID" width="100"></el-table-column>
-              <el-table-column fixed prop="name" label="姓名" width="120"></el-table-column>
-              <el-table-column prop="date" label="日期" width="150"></el-table-column>
-              <el-table-column prop="province" label="省份" width="120"></el-table-column>
-              <el-table-column prop="city" label="市区" width="120"> </el-table-column>
-              <el-table-column prop="address" label="地址" width="300"></el-table-column>
-              <el-table-column prop="zip" label="邮编" width="120"></el-table-column>
-              <el-table-column fixed="right" label="操作" width="220">
-              <template slot-scope="scopeOne">
-                  <el-button @click="handleClick(scopeOne.row)" type="text">查看</el-button>
-                  <el-tooltip class="item" effect="dark" content="编辑内容" placement="top-start">
-                    <el-button type="primary" icon="el-icon-edit"></el-button>
-                  </el-tooltip>
-                  <el-tooltip class="item" effect="dark" content="删除内容" placement="top-end">
-                    <el-button type="primary" icon="el-icon-delete" @click="deleteRow(scopeOne.row)"></el-button>
-                  </el-tooltip>
-              </template>
-              </el-table-column>
-          </el-table>
-      </div>
-			<div v-show="showTable" class="pagination" >
-				<el-pagination
-				  background
-					:page-size="pageSize"
-					@current-change="currentChange"
-				  layout="prev, pager, next, total" 
-				  :total="totalNumber">
-				</el-pagination>
+	<div class="wrap">
+	    <div class="left">
+	        <div class="selectContainer">
+	            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+	               
+	                <el-form-item label="部门" size="mini">
+	                    <el-select v-model="formInline.region" placeholder="选择部门" style="width: 100px;">
+	                    <el-option label="研发一部" value="1"></el-option>
+	                    <el-option label="研发二部" value="2"></el-option>
+	                    </el-select>
+	                </el-form-item>
+					<el-form-item label="姓名" size="mini">
+					    <el-input v-model="formInline.user" placeholder="姓名" style="width: 60px;"></el-input>
+					</el-form-item>
+	                <el-form-item size="mini">
+	                    <el-button type="primary" @click="queryData" >查询</el-button>
+	                </el-form-item>
+	            </el-form>
+	        </div>
+			<div>
+				<div v-if="tableData.length>0">
+					<div v-show="showTable" class="content" style="margin-top:5px">
+				      <el-table ref="multipleTable"
+				          tooltip-effect="dark"
+						  max-height="450"
+						  size="mini"
+				          @selection-change="handleSelectionChange"
+				          :data="tableData" border style="width: 100%;">
+                          <el-table-column fixed prop="name" label="姓名" width="70"></el-table-column>
+				          <el-table-column fixed prop="id" label="ID" width="100"></el-table-column>
+				          <el-table-column prop="zip" label="卡号" width="120"></el-table-column>
+				          <!--
+						  <el-table-column fixed="right" label="操作" width="220">
+				          <template slot-scope="scopeOne">
+				              <el-button @click="handleClick(scopeOne.row)" type="text">查看</el-button>
+				          </template>
+				          </el-table-column>
+						  -->
+				      </el-table>
+					</div>
+					<div v-show="showTable" class="pagination" >
+						<el-pagination
+						    background small
+							:page-size="pageSize"
+							@current-change="currentChange"
+						  layout="prev, pager, next, total" 
+						  :total="totalNumber">
+						</el-pagination>
+					</div>
+				</div>
+				
 			</div>
-    </div>
+	    </div>
+	    <div class="right">
+			
+		</div>
+	</div>
 </div>
 </template>
 
@@ -67,8 +69,8 @@ export default {
         user: '',
         region: ''
       },
-			totalNumber:999,
-			pageSize:10,
+	  totalNumber:9999,
+	  pageSize:10,
       tableData: [{
         id: 12311,
         date: '2016-05-02',
@@ -176,8 +178,9 @@ export default {
 			let loadingInstance = this.$loading(loadOptions)
 			setTimeout(function(){
 				loadingInstance.close()
-			},2000)
-      // this.showTable = this.tableData.length > 0
+			},500)
+		this.showTable = this.tableData.length > 0
+		this.currentChange(1)
     },
     handleClick (row) {
       console.log(row)
@@ -232,8 +235,8 @@ export default {
 </script>
 <style scoped="scoped">
 .selectContainer{
-    height: 40px;
-    padding: 6px 10px 0 10px;
+    height: 32px;
+    padding: 6px 2px 0 2px;
     border:1px solid #DCDFE6;
     border-radius: 10px;
     text-align: center;
@@ -244,8 +247,24 @@ export default {
 }
 
 .pagination {
-	float:right;
-	margin-top: 5px;
-	margin-right: 20px;
+	margin-top: 1px;
+	margin-left: -10px;
+}
+
+.wrap {
+	display: -webkit-box;
+	width:100%;
+	min-height: 550px;
+}
+.left{
+	width:28%;
+	padding: 5px;
+	border:1px solid #DCDFE6;
+}
+.right {
+	width:68%;
+	margin-left:5px;
+	padding: 10px;
+	border:1px solid #DCDFE6;
 }
 </style>

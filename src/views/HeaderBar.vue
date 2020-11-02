@@ -9,12 +9,11 @@
 				<li><a href="javascript:void(0);" @click="authManage">权限管理</a></li>
 				<li><a href="javascript:void(0);" @click="specialFunc">特殊功能</a></li>
 				<li><a href="javascript:void(0);" @click="systemManage">系统管理</a></li>
-			</ul>
-				
-			<div class="header_right">
-			  <span>welcome,{{userName}}</span>
-			  <a class="login-out" @click="logout">退出</a>
-			</div>
+			</ul>	
+		</div>
+		<div class="header_right">
+		  <span>welcome,{{userName}}</span>
+		  <a class="login-out" @click="logout">退出</a>
 		</div>
 	</div>
 </template>
@@ -144,7 +143,7 @@ export default {
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1.05);
 }
 #nav-1 .nav .slide1 {
-  background-color: #67C23A;
+  background-color: #569fe8;
   z-index: 2;
 }
 #nav-1 .nav .slide2 {

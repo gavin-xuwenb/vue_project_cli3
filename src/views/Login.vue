@@ -43,7 +43,8 @@ export default {
           this.$message({
             message: '登陆成功',
             type: 'success',
-            duration: 2000
+            duration: 2000,
+			offset: 200
           })
 		  this.$router.push('/layout');
         } else {
