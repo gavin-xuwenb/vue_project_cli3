@@ -5,14 +5,17 @@
 	        <div class="selectContainer">
 	            <el-form :inline="true" :model="formInline" class="demo-form-inline">
 	               
-	                <el-form-item label="部门" size="mini">
-	                    <el-select v-model="formInline.region" placeholder="选择部门" style="width: 100px;">
-	                    <el-option label="研发一部" value="1"></el-option>
-	                    <el-option label="研发二部" value="2"></el-option>
+	                <el-form-item label="" size="mini">
+	                    <el-select v-model="formInline.region" style="width: 150px;">
+	                    <el-option label="员工编号" value="1"></el-option>
+	                    <el-option label="卡号" value="2"></el-option>
+						<el-option label="姓名" value="3"></el-option>
+						<el-option label="部门代码" value="4"></el-option>
+						<el-option label="部门名称" value="5"></el-option>
 	                    </el-select>
 	                </el-form-item>
-					<el-form-item label="姓名" size="mini">
-					    <el-input v-model="formInline.user" placeholder="姓名" style="width: 60px;"></el-input>
+					<el-form-item label="" size="mini">
+					    <el-input v-model="formInline.inputData" style="width: 100px;"></el-input>
 					</el-form-item>
 	                <el-form-item size="mini">
 	                    <el-button type="primary" @click="queryData" >查询</el-button>
@@ -21,16 +24,16 @@
 	        </div>
 			<div>
 				<div v-if="tableData.length>0">
-					<div v-show="showTable" class="content" style="margin-top:5px">
+					<div  class="content" style="margin-top:5px">
 				      <el-table ref="multipleTable"
 				          tooltip-effect="dark"
 						  max-height="450"
 						  size="mini"
 				          @selection-change="handleSelectionChange"
 				          :data="tableData" border style="width: 100%;">
-                          <el-table-column fixed prop="name" label="姓名" width="70"></el-table-column>
-				          <el-table-column fixed prop="id" label="ID" width="100"></el-table-column>
-				          <el-table-column prop="zip" label="卡号" width="120"></el-table-column>
+                          <el-table-column fixed prop="cname" label="姓名" width="100"></el-table-column>
+				          <el-table-column fixed prop="empno" label="员工编号" width="120"></el-table-column>
+				          <el-table-column prop="cardno" label="卡号" width="120"></el-table-column>
 				          <!--
 						  <el-table-column fixed="right" label="操作" width="220">
 				          <template slot-scope="scopeOne">
@@ -62,125 +65,43 @@
 
 <script>
 import { loadOptions } from '@/utils/loading.js'
+import {getUserList,getEmpByName} from '@/axios/api.js'
 export default {
   data () {
     return {
       formInline: {
-        user: '',
+        inputData: '',
         region: ''
       },
-	  totalNumber:9999,
+	  totalNumber:0,
 	  pageSize:10,
-      tableData: [{
-        id: 12311,
-        date: '2016-05-02',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1518 弄',
-        zip: 200333
-      }, {
-        id: 12312,
-        date: '2016-05-04',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1517 弄',
-        zip: 200333
-      }, {
-        id: 12313,
-        date: '2016-05-01',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1519 弄',
-        zip: 200333
-      }, {
-        id: 12314,
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
-      }, {
-        id: 12315,
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
-      }, {
-        id: 12316,
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
-      }, {
-        id: 12317,
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
-      }, {
-        id: 12318,
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
-      }, {
-        id: 12319,
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
-      }, {
-        id: 12319,
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
-      }],
+      tableData: [],
       showTable: false
     }
   },
+  created: async function () {
+      const params = {
+        pageNum: 1,
+		pageSize:this.pageSize
+      };
+      let res = await getUserList(params)
+      this.tableData = res.list
+	  this.totalNumber = res.recordNumber
+  },
   methods: {
-    order11 () {
-      console.log('token=' + this.$store.state.token)
-      //let loadingInstance = this.$loading(loadOptions)
-      this.$axios
-        .post(process.env.HOST + '/user/testToken', {'name': 'xuwenbin'})
-        .then(data => {
-          //loadingInstance.close()
-
-          if (data.status === 502) {
-            this.$message.error(data.msg)
-          } else {
-            this.$message.error(data.status)
-          }
-        })
-        .catch(() => {
-          // loadingInstance.close()
-        })
-    },
-    queryData () {
-			let loadingInstance = this.$loading(loadOptions)
-			setTimeout(function(){
-				loadingInstance.close()
-			},500)
-		this.showTable = this.tableData.length > 0
-		this.currentChange(1)
+    queryData:async function() {
+		if(this.formInline.inputData.trim() == '') return false;
+		//let loadingInstance = this.$loading(loadOptions)
+		const params = {
+		   cname:this.formInline.inputData,
+		   pageNum: 1,
+		   pageSize:this.pageSize
+		};
+		let res = await getEmpByName(params)
+		this.tableData = res.list
+		this.totalNumber = res.recordNumber
+		
+		//this.currentChange(1)
     },
     handleClick (row) {
       console.log(row)

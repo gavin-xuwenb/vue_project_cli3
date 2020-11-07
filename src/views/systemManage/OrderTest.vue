@@ -1,38 +1,15 @@
 <template>
 	<div class="content">
-		<el-form ref="form" :model="form" label-width="150px">
-		  <el-form-item label="HEAD">
-		    <el-input v-model="form.HEAD"
-			          maxlength="2" minlength="2" 
-					  show-word-limit disabled></el-input>
-		  </el-form-item>
-		 
-		  <el-form-item label="DID(机器号)">
-		   <el-input v-model="form.DID" ref="DID"
-		             maxlength="2"  minlength="2" 
-					 autofocus
-					 placeholder="请输入2位数机器号"
+		<el-form :inline="true" ref="form" :model="form" label-width="150px">
+			<el-form-item label="输入指令">
+		         <el-input v-model="form.cmdStr" ref="cmdStr" 
+					 maxlength="50" 
 					 show-word-limit></el-input>
-			<span class="text-red">范围00~FF</span>
-		  </el-form-item>
+		    </el-form-item>
 		  
-		  <el-form-item label="Command(指令)">
-		   <el-input v-model="form.Command" ref="Command"
-		             maxlength="2" minlength="2" 
-					 placeholder="请输入2位数指令"
-					 show-word-limit></el-input>
-			<span class="text-red">范围00~FF</span>
-		  </el-form-item>
-		  
-		  <el-form-item label="DATA">
-		   <el-input v-model="form.DATA" ref="DATA"
-					 maxlength="40" 
-					 show-word-limit></el-input>
-		  </el-form-item>
-		  
-		  <el-form-item>
-		    <el-button type="primary" @click="onSubmit">发送</el-button>
-		  </el-form-item>
+			<el-form-item>
+				<el-button type="primary" @click="onSubmit">发送</el-button>
+			</el-form-item>
 		</el-form>
 		
 		<div class="sub-title">服务器返回数据</div>
@@ -54,43 +31,25 @@ export default {
 	data () {
 		return {
 			form: {
-			  HEAD: '7E',
-			  DID: '',
-			  Command: '',
-			  DATA: ''
+				cmdStr : ''
 			},
-			textarea: ''
+			textarea:''
 		}
     },
 	mounted(){
-		this.$refs['DID'].focus()
+		this.$refs['cmdStr'].focus()
 	},
     methods: {
 		onSubmit() {
-			this.form.DID = this.form.DID.trim()
-			this.form.Command = this.form.Command.trim()
-			this.form.DATA = this.form.DATA.trim()
+			 
+			this.form.cmdStr = this.form.cmdStr.trim()
 			
 			let _form = this.form
-			if(_form.DID.length!=2){
-				this.showTips('请输入2位数的DID')
-				this.$refs['DID'].focus()
+			if(_form.cmdStr.length==0){
+				this.showTips('请输入指令！')
+				this.$refs['cmdStr'].focus()
 				return false
 			}
-			
-			if(_form.Command.length!=2){
-				this.showTips('请输入2位数的指令')
-				this.$refs['Command'].focus()
-				return false
-			}
-			
-			if(_form.DATA.length==0 || _form.DATA.length%2!=0){
-				this.showTips('请输入正确的DATA')
-				this.$refs['DATA'].focus()
-				return false
-			}
-			
-			this.textarea = ''
 			console.log('发送中...')
 		},
 		showTips(message){
