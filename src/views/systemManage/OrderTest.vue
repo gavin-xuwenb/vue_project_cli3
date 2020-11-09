@@ -26,12 +26,13 @@
 </template>
 
 <script>
+import {orderTest} from '@/axios/api.js'
 export default {
 	name : "orderTest",
 	data () {
 		return {
 			form: {
-				cmdStr : ''
+				cmdStr : '7E06012184015A01'
 			},
 			textarea:''
 		}
@@ -40,7 +41,7 @@ export default {
 		this.$refs['cmdStr'].focus()
 	},
     methods: {
-		onSubmit() {
+		onSubmit:async function() {
 			 
 			this.form.cmdStr = this.form.cmdStr.trim()
 			
@@ -50,7 +51,13 @@ export default {
 				this.$refs['cmdStr'].focus()
 				return false
 			}
-			console.log('发送中...')
+			const params = {
+				cmdStr: this.form.cmdStr.trim()	
+			};
+			
+			let ret = await orderTest(params)
+			console.log(ret);
+			this.textarea = ret;
 		},
 		showTips(message){
 			this.$notify.error({

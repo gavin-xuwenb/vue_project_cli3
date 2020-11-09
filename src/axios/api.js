@@ -21,6 +21,15 @@ export const getEmpByName = data => {
 };
 
 
+
+export const orderTest = data => {
+  return service({
+    url: '/orderTest/orderTest',
+    method: 'get',
+    data,
+	params:data
+  })
+};
 //具体组件调用的时候
 // import {getUserList} from '../axios/api.js'
 // export default {
