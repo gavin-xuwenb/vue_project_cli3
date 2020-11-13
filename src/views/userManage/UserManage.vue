@@ -65,7 +65,7 @@
 
 <script>
 //import { loadOptions } from '@/utils/loading.js'
-import {getUserList,getEmpByName} from '@/axios/api.js'
+//import {getUserList,getEmpByName} from '@/axios/api.js'
 export default {
   data () {
     return {
@@ -84,9 +84,15 @@ export default {
         pageNum: 1,
 		pageSize:this.pageSize
       };
-      let res = await getUserList(params)
-      this.tableData = res.list
-	  this.totalNumber = res.recordNumber
+   //    let res = await getUserList(params)
+   //    this.tableData = res.list
+	  // this.totalNumber = res.recordNumber
+	  
+	  this.$http.post("/employee/selectAll", params).then(res => {
+	    if (res.status === 200) {
+	       
+	    }
+	  })
   },
   methods: {
     queryData:async function() {
@@ -97,9 +103,9 @@ export default {
 		   pageNum: 1,
 		   pageSize:this.pageSize
 		};
-		let res = await getEmpByName(params)
-		this.tableData = res.list
-		this.totalNumber = res.recordNumber
+		// let res = await getEmpByName(params)
+		// this.tableData = res.list
+		// this.totalNumber = res.recordNumber
 		
 		//this.currentChange(1)
     },
