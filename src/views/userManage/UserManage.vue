@@ -28,6 +28,8 @@
 				      <el-table ref="multipleTable"
 				          tooltip-effect="dark"
 						  max-height="450"
+						  @cell-click="clickRow" 
+						  highlight-current-row
 						  size="mini"
 				          @selection-change="handleSelectionChange"
 				          :data="tableData" border style="width: 100%;">
@@ -57,7 +59,52 @@
 			</div>
 	    </div>
 	    <div class="right">
-			
+			<div v-if='userInfo!=null'>
+				<el-form :inline="true" :model="formInline" class="demo-form-inline">
+					 <el-form-item label="使用群组" size="mini">
+						 <el-input :value="userInfo.userfd7" :disabled="true" style="width: 200px;"></el-input>
+					 </el-form-item>
+				</el-form>
+				
+				<el-form :inline="true" :model="formInline" class="demo-form-inline">
+					 <el-form-item label="姓名" size="mini">
+					 	<el-input :value="userInfo.cname" style="width: 100px;"></el-input>
+					 </el-form-item>
+					 <el-form-item label="员工编号" size="mini">
+					 	<el-input :value="userInfo.empno" style="width: 100px;"></el-input>
+					 </el-form-item>
+					 <el-form-item label="部门代码" size="mini">
+					 	<el-input :value="userInfo.dept" style="width: 100px;"></el-input>
+					 </el-form-item>
+					 <el-form-item label="部门名称" size="mini">
+					 	<el-input :value="userInfo.userfd4" style="width: 100px;"></el-input>
+					 </el-form-item>
+				</el-form>
+				
+				<el-form :inline="true" :model="formInline" class="demo-form-inline">
+					 <el-form-item label="卡号" size="mini">
+					 	<el-input :value="userInfo.cardno" style="width: 100px;"></el-input>
+					 </el-form-item>
+					 <el-form-item label="有效期" size="mini">
+					 	<el-input :value="userInfo.outdate" style="width: 100px;"></el-input>
+					 </el-form-item>
+					 <el-form-item label="卡片序号" size="mini">
+					 	<el-input :value="userInfo.seq" :disabled="true" style="width: 100px;"></el-input>
+					 </el-form-item>
+					 <el-form-item label="门禁密码" size="mini">
+					 	<el-input :value="userInfo.password" style="width: 100px;"></el-input>
+					 </el-form-item>
+					 <el-form-item label="厂商" size="mini">
+					 	 <el-switch v-model="formInline.isvendor"></el-switch>
+					 </el-form-item>
+					 <el-form-item label="公司" size="mini">
+					 	<el-input value="" style="width: 100px;"></el-input>
+					 </el-form-item>
+					 <el-form-item label="电话" size="mini">
+					 	<el-input value="" style="width: 100px;"></el-input>
+					 </el-form-item>
+				</el-form>
+			</div>
 		</div>
 	</div>
 </div>
@@ -70,12 +117,14 @@ export default {
     return {
       formInline: {
         inputData: '',
-        region: ''
+        region: '',
+		isvendor:false
       },
 	  totalNumber:0,
 	  pageSize:10,
       tableData: [],
-      showTable: false
+      showTable: false,
+	  userInfo:null
     }
   },
   created:  function () {
@@ -92,22 +141,33 @@ export default {
 	  })
   },
   methods: {
-    queryData:async function() {
-		if(this.formInline.inputData.trim() == '') return false;
-
-		const params = {
-		   cname:this.formInline.inputData,
-		   pageNum: 1,
-		   pageSize:this.pageSize
-		};
-
-		this.$http.get("/employee/getEmpByName", {params:params}).then(res => {
-		  if (res.status === 200) {
-				this.tableData = res.data.list
-				this.totalNumber = res.data.recordNumber
-		  }
-		})
-		//this.currentChange(1)
+    queryData: function() {
+		if(this.formInline.inputData.trim() == ''){
+			const params = {
+			  pageNum: 1,
+					pageSize:this.pageSize
+			};
+			
+			this.$http.get("/employee/selectAll", {"params":params}).then(res => {
+			  if (res.status === 200) {
+					   this.tableData = res.data.list
+					   this.totalNumber = res.data.recordNumber
+			  }
+			})
+		}else{
+			const params = {
+			   cname:this.formInline.inputData,
+			   pageNum: 1,
+			   pageSize:this.pageSize
+			};
+			
+			this.$http.get("/employee/getEmpByName", {params:params}).then(res => {
+			  if (res.status === 200) {
+					this.tableData = res.data.list
+					this.totalNumber = res.data.recordNumber
+			  }
+			})
+		}
     },
     handleClick (row) {
       console.log(row)
@@ -121,6 +181,12 @@ export default {
         this.$refs.multipleTable.clearSelection()
       }
     },
+	clickRow(row){
+		this.userInfo = row
+		this.formInline.isvendor = row.isvendor === '1' ? true:false
+		console.log(this.formInline.isvendor)
+		console.log(row)
+	},
     handleSelectionChange (val) {
       this.multipleSelection = val
     },

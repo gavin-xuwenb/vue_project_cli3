@@ -24,6 +24,7 @@
 				      <el-table ref="multipleTable"
 				          tooltip-effect="dark"
 						  @cell-click="clickRow"
+						  highlight-current-row
 						  max-height="450"
 						  size="mini"
 				          @selection-change="handleSelectionChange"
