@@ -2,13 +2,18 @@
 <div>
 	<div>
 		<el-tabs v-model="activeName" type="border-card" @tab-click='tabClick' >
-		  <el-tab-pane label="设备状态" name="first" :key="'first'">
-		  			  <device-check v-if="activeName=='first'"></device-check>
-		  </el-tab-pane>
-		  <el-tab-pane label="设备查询" name="second" :key="'second'">
-			  <device-query v-if="activeName=='second'"></device-query>
+		  
+		  <el-tab-pane label="设备查询" name="first" :key="'first'">
+		  			  <device-query v-if="activeName=='first'"></device-query>
 		  </el-tab-pane>
 		  
+		  <el-tab-pane label="设备状态" name="second" :key="'second'">
+		  	  <device-check v-if="activeName=='second'"></device-check>
+		  </el-tab-pane>
+		  
+		  <el-tab-pane label="时间查询" name="third" :key="'third'">
+		  	  <device-time v-if="activeName=='third'"></device-time>
+		  </el-tab-pane>
 		</el-tabs>
 	</div>
 </div>
@@ -17,11 +22,13 @@
 <script>
 import deviceQuery from '@/views/deviceManage/DeviceQuery.vue'
 import deviceCheck from '@/views/deviceManage/DeviceCheck.vue'
+import deviceTime from '@/views/deviceManage/DeviceTime.vue'
 export default {
 	name : "deviceMain",
 	components : {
 		deviceQuery,
-		deviceCheck
+		deviceCheck,
+		deviceTime
 	},
 	data () {
 		return {

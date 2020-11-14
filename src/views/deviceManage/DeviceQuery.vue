@@ -54,7 +54,81 @@
 			</div>
 	    </div>
 	    <div class="right">
-			
+			<div v-if='machineInfo!=null'>
+				<div class="">
+					 <el-form :inline="true" :model="formInline" class="demo-form-inline">
+						 <el-form-item label="名称" size="mini">
+							<el-input :value="machineInfo.note00" style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="机号" size="mini">
+							<el-input :value="machineInfo.add" style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="群组" size="mini">
+							<el-input :value="machineInfo.grp" style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="启用" size="mini">
+							 <el-checkbox v-model="isEnable"></el-checkbox>
+						 </el-form-item>
+					 </el-form>
+					 
+					 <el-form :inline="true" :model="formInline" class="demo-form-inline">
+						 <el-form-item label="控制器机号" size="mini">
+							<el-input :value="machineInfo.idadd"  style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="IP" size="mini">
+						 	<el-input :value="machineInfo.ipadd"  style="width: 200px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="IPPort" size="mini">
+						 	<el-input :value="machineInfo.ipPort"  style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="timeout" size="mini">
+						 	<el-input :value="machineInfo.ddelay"  style="width: 100px;"></el-input>
+						 </el-form-item>
+					 </el-form>
+					 
+					 <el-form :inline="true" :model="formInline" class="demo-form-inline">
+						 <el-form-item label="读卡机1" size="mini">
+							<el-input :value="machineInfo.note1"  style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="电锁时间1" size="mini">
+							<el-input    style="width: 200px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="開門過久時間1" size="mini">
+							<el-input    style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="自動開門" size="mini">
+							<el-input    style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="开启禁戒" size="mini">
+						 	<el-input    style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="FACE" size="mini">
+						 	<el-input    style="width: 100px;"></el-input>
+						 </el-form-item>
+					 </el-form>
+					 
+					 <el-form :inline="true" :model="formInline" class="demo-form-inline">
+						 <el-form-item label="读卡机2" size="mini">
+							<el-input :value="machineInfo.note2"  style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="电锁时间2" size="mini">
+							<el-input    style="width: 200px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="開門過久時間2" size="mini">
+							<el-input    style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="自動開門" size="mini">
+							<el-input    style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="开启禁戒" size="mini">
+							<el-input    style="width: 100px;"></el-input>
+						 </el-form-item>
+						 <el-form-item label="FACE" size="mini">
+							<el-input    style="width: 100px;"></el-input>
+						 </el-form-item>
+					 </el-form>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -70,6 +144,8 @@ export default {
 			  user: '',
 			  region: ''
 			},
+			machineInfo:null,
+			isEnable:false,
 			totalNumber:4,
 			pageSize:10,
 			mList: [{
@@ -148,7 +224,9 @@ export default {
 		},
 		//行点击事件clickRow(row,column,event){
 		clickRow(row){
-			console.log(row.add)
+			this.machineInfo = row
+			this.isEnable = row.isEnable
+			console.log(row)
 		}
 	}
 }
