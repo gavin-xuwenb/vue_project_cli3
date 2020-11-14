@@ -65,7 +65,6 @@
 
 <script>
 //import { loadOptions } from '@/utils/loading.js'
-//import {getUserList,getEmpByName} from '@/axios/api.js'
 export default {
   data () {
     return {
@@ -79,34 +78,35 @@ export default {
       showTable: false
     }
   },
-  created: async function () {
+  created:  function () {
       const params = {
         pageNum: 1,
 		pageSize:this.pageSize
       };
-   //    let res = await getUserList(params)
-   //    this.tableData = res.list
-	  // this.totalNumber = res.recordNumber
 	  
-	  this.$http.post("/employee/selectAll", params).then(res => {
+	  this.$http.get("/employee/selectAll", {"params":params}).then(res => {
 	    if (res.status === 200) {
-	       
+		   this.tableData = res.data.list
+		   this.totalNumber = res.data.recordNumber
 	    }
 	  })
   },
   methods: {
     queryData:async function() {
 		if(this.formInline.inputData.trim() == '') return false;
-		//let loadingInstance = this.$loading(loadOptions)
+
 		const params = {
 		   cname:this.formInline.inputData,
 		   pageNum: 1,
 		   pageSize:this.pageSize
 		};
-		// let res = await getEmpByName(params)
-		// this.tableData = res.list
-		// this.totalNumber = res.recordNumber
-		
+
+		this.$http.get("/employee/getEmpByName", {params:params}).then(res => {
+		  if (res.status === 200) {
+				this.tableData = res.data.list
+				this.totalNumber = res.data.recordNumber
+		  }
+		})
 		//this.currentChange(1)
     },
     handleClick (row) {

@@ -24,7 +24,9 @@ service.interceptors.request.use(
 	
     if (!params._hiding) { // 默认情况调用接口时，弹出遮盖，上送_hiding时不显示遮盖
       loading = Loading.service({
-        spinner: 'el-icon-loading'
+        spinner: 'el-icon-loading',
+		text: '加载中...',
+		background:'rgba(0, 0, 0, 0.8)'
       })
     }
     if (sessionStorage.getItem('token')) {

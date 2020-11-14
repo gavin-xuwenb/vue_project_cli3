@@ -10,34 +10,22 @@
 	
 	<div v-if="filterList.length>0" style="margin:0 auto;">
 		<div class="home-card">
-			<div class="home-item" v-for="(item,index) in filterList" :key="item.seq+index">
-				<div>
-					<div v-for="n in 6" :class="item.connect? 'circle circleGreen' : 'circle circleRed'" :key="n"></div>
-				</div>
-				<img class="home-img"  src='~/assets/images/server.jpeg' alt="">
-				<div class="home-right">
-				  <span>{{item.name}}</span>
-				  <span v-if="item.connect" class="el-icon-success fontGreen">
-					  已连接
-				  </span>
-				  <span v-else class="el-icon-error fontRed">
-					  未连接
-				  </span>
-				  <div class="openBtn">
-					<el-button type="primary" plain :disabled="!item.connect">远端开门</el-button>
-				  </div>
-				</div>
-			</div>
+			<template v-for="(item,index) in filterList">
+				<sigleMachine :item="item" :key="item.seq+index"></sigleMachine>
+			</template>
 		</div>
     </div>
 </div>
 </template>
 
 <script>
-import { loadOptions } from '@/utils/loading.js'
+import sigleMachine from '@/components/SigleMachine.vue'
 export default {
-name : "deviceCheck",
-data () {
+	name : "deviceCheck",
+	components : {
+		sigleMachine
+	},
+	data () {
     return {
       formInline: {
         mname: ''
@@ -50,8 +38,7 @@ data () {
 		note2:'0001-1',
 		note3:'',
 		note4:'',
-		note5:'',
-		connect:true
+		note5:''
       }, {
         seq: 2,
         add:"0002",
@@ -60,8 +47,7 @@ data () {
 		note2:'',
 		note3:'',
 		note4:'',
-		note5:'',
-		connect:false
+		note5:''
       }, {
         seq: 3,
         add:"0003",
@@ -70,8 +56,7 @@ data () {
 		note2:'0003-2',
 		note3:'',
 		note4:'',
-		note5:'',
-		connect:false
+		note5:''
       }, {
         seq: 4,
         add:"0004",
@@ -80,10 +65,16 @@ data () {
 		note2:'0004-800-2',
 		note3:'',
 		note4:'',
-		note5:'',
-		connect:false
+		note5:''
       }]
     }
+  },
+  created:  function () {
+  	  this.$http.get("/machine/selectAll").then(res => {
+  	    if (res.status === 200) {
+  		   this.mList = res.data.list
+  	    }
+  	  })
   },
   computed:{
 	realList:function(){
@@ -93,7 +84,7 @@ data () {
 			for(let i=1;i<33;i++){
 				let column = 'note'+i
 				if(item[column]){
-					list.push({'seq':item.seq,'add':item.add,'name':item[column],'connect':item.connect})
+					list.push({'seq':item.seq,'add':item.add,'name':item[column],'ipadd':item.ipadd,'ipPort':item.ipPort})
 				}
 			}
 		})
@@ -118,16 +109,7 @@ data () {
 	}
   },
   methods: {
-	tabClick (tab) {
-		this.activeName = tab.name
-	},
-    queryData () {
-		let loadingInstance = this.$loading(loadOptions)
-		setTimeout(function(){
-			loadingInstance.close()
-		},2000)
-        // this.showTable = this.tableData.length > 0
-    }
+	  
   }
 }
 </script>
@@ -155,67 +137,7 @@ data () {
     display:flex;
     flex-wrap: wrap;
 }
-/*div均分自动换行*/
-.home-card  .home-item {
-      border-style:solid;
-      border-width: 1px;
-      border-color: #E4E4E4;
-      width: calc(18% - 15px);
-      padding: 20px 0px 20px 10px;
-      margin-left: 24px;
-      margin-bottom: 10px;
-      display:flex;
-      align-items: center;
-      background: #fff;
-      
-}
-.home-card  .home-img {
-        display: inline-block;
-        width: 60px;
-        margin: 0;
-        padding: 0;
-      }
-.home-card .home-right {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        margin-left: 10px
-}
 
-.home-card .home-num {
-	  font-size: 40px;
-	  margin: 5px 0;
-}
-
-.circle {
-	margin-bottom:4px;
-    width: 15px;
-    height: 15px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
-.circleRed{
-	background-color: firebrick;
-}
-.circleGreen{
-	background-color: seagreen;
-}
-
-.fontRed{
-	font-size: 14px;
-	color: red;
-}
-.fontGreen{
-	font-size: 14px;
-	color: green;
-}
-
-.openBtn{
-	height: 35px;
-	margin-top: 20px;
-}
 .clearfix:after {
     clear: both;
 }

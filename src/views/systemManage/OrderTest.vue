@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import {orderTest} from '@/axios/api.js'
 export default {
 	name : "orderTest",
 	data () {
@@ -41,7 +40,7 @@ export default {
 		this.$refs['cmdStr'].focus()
 	},
     methods: {
-		onSubmit:async function() {
+		onSubmit: function() {
 			 
 			this.form.cmdStr = this.form.cmdStr.trim()
 			
@@ -54,10 +53,12 @@ export default {
 			const params = {
 				cmdStr: this.form.cmdStr.trim()	
 			};
-			
-			let ret = await orderTest(params)
-			console.log(ret);
-			this.textarea = ret;
+
+			this.$http.get("/orderTest/orderTest", {"params":params}).then(res => {
+			  if (res.status === 200) {
+					this.textarea = res.data;
+			  }
+			})
 		},
 		showTips(message){
 			this.$notify.error({

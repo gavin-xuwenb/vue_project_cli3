@@ -19,7 +19,7 @@
 	            </el-form>
 	        </div>
 			<div>
-				<div v-if="tableData.length>0">
+				<div v-if="mList.length>0">
 					<div v-show="showTable" class="content" style="margin-top:5px">
 				      <el-table ref="multipleTable"
 				          tooltip-effect="dark"
@@ -27,7 +27,7 @@
 						  max-height="450"
 						  size="mini"
 				          @selection-change="handleSelectionChange"
-				          :data="tableData" border style="width: 100%;">
+				          :data="mList" border style="width: 100%;">
 	                      <el-table-column fixed prop="add" label="机号" width="100"></el-table-column>
 				          <el-table-column fixed prop="note00" label="名称"></el-table-column>
 				          <!--
@@ -71,7 +71,7 @@ export default {
 			},
 			totalNumber:4,
 			pageSize:10,
-			tableData: [{
+			mList: [{
 				seq: 1,
 				add:"0001",
 				note00:'0001-721',
@@ -80,7 +80,6 @@ export default {
 				note3:'',
 				note4:'',
 				note5:'',
-				connect:true
 			  }, {
 				seq: 2,
 				add:"0002",
@@ -89,8 +88,7 @@ export default {
 				note2:'',
 				note3:'',
 				note4:'',
-				note5:'',
-				connect:false
+				note5:''
 			  }, {
 				seq: 3,
 				add:"0003",
@@ -99,8 +97,7 @@ export default {
 				note2:'0003-2',
 				note3:'',
 				note4:'',
-				note5:'',
-				connect:false
+				note5:''
 			  }, {
 				seq: 4,
 				add:"0004",
@@ -109,11 +106,19 @@ export default {
 				note2:'0004-800-2',
 				note3:'',
 				note4:'',
-				note5:'',
-				connect:false
+				note5:''
 			  }],
 			showTable: false
 		}
+	},
+	created:  function () {
+		  this.$http.get("/machine/selectAll").then(res => {
+		    if (res.status === 200) {
+			   this.mList = res.data.list
+			   this.totalNumber = this.mList.length;
+			   this.showTable = this.mList.length > 0
+		    }
+		  })
 	},
 	methods: {
 		queryData () {
@@ -121,7 +126,7 @@ export default {
 			setTimeout(function(){
 				loadingInstance.close()
 			},500)
-			this.showTable = this.tableData.length > 0
+			this.showTable = this.mList.length > 0
 			this.currentChange(1)
 		},
 		
