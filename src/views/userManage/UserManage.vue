@@ -60,50 +60,61 @@
 	    </div>
 	    <div class="right">
 			<div v-if='userInfo!=null'>
-				<el-form :inline="true" :model="formInline" class="demo-form-inline">
-					 <el-form-item label="使用群组" size="mini">
-						 <el-input :value="userInfo.userfd7" :disabled="true" style="width: 200px;"></el-input>
-					 </el-form-item>
-				</el-form>
-				
-				<el-form :inline="true" :model="formInline" class="demo-form-inline">
-					 <el-form-item label="姓名" size="mini">
-					 	<el-input :value="userInfo.cname" style="width: 100px;"></el-input>
-					 </el-form-item>
-					 <el-form-item label="员工编号" size="mini">
-					 	<el-input :value="userInfo.empno" style="width: 100px;"></el-input>
-					 </el-form-item>
-					 <el-form-item label="部门代码" size="mini">
-					 	<el-input :value="userInfo.dept" style="width: 100px;"></el-input>
-					 </el-form-item>
-					 <el-form-item label="部门名称" size="mini">
-					 	<el-input :value="userInfo.userfd4" style="width: 100px;"></el-input>
-					 </el-form-item>
-				</el-form>
-				
-				<el-form :inline="true" :model="formInline" class="demo-form-inline">
-					 <el-form-item label="卡号" size="mini">
-					 	<el-input :value="userInfo.cardno" style="width: 100px;"></el-input>
-					 </el-form-item>
-					 <el-form-item label="有效期" size="mini">
-					 	<el-input :value="userInfo.outdate" style="width: 100px;"></el-input>
-					 </el-form-item>
-					 <el-form-item label="卡片序号" size="mini">
-					 	<el-input :value="userInfo.seq" :disabled="true" style="width: 100px;"></el-input>
-					 </el-form-item>
-					 <el-form-item label="门禁密码" size="mini">
-					 	<el-input :value="userInfo.password" style="width: 100px;"></el-input>
-					 </el-form-item>
-					 <el-form-item label="厂商" size="mini">
-					 	 <el-switch v-model="formInline.isvendor"></el-switch>
-					 </el-form-item>
-					 <el-form-item label="公司" size="mini">
-					 	<el-input value="" style="width: 100px;"></el-input>
-					 </el-form-item>
-					 <el-form-item label="电话" size="mini">
-					 	<el-input value="" style="width: 100px;"></el-input>
-					 </el-form-item>
-				</el-form>
+				<el-row>
+				  <el-col :span="20">
+					  <div class=" ">
+						 <el-form :inline="true" :model="formInline" class="demo-form-inline">
+						 	 <el-form-item label="使用群组" size="mini">
+						 		 <el-input :value="userInfo.userfd7" :disabled="true" style="width: 200px;"></el-input>
+						 	 </el-form-item>
+						 </el-form>
+						 
+						 <el-form :inline="true" :model="formInline" class="demo-form-inline">
+						 	 <el-form-item label="姓名" size="mini">
+						 	 	<el-input :value="userInfo.cname" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 	 <el-form-item label="员工编号" size="mini">
+						 	 	<el-input :value="userInfo.empno" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 	 <el-form-item label="部门代码" size="mini">
+						 	 	<el-input :value="userInfo.dept" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 	 <el-form-item label="部门名称" size="mini">
+						 	 	<el-input :value="userInfo.userfd4" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 </el-form>
+						 
+						 <el-form :inline="true" :model="formInline" class="demo-form-inline">
+						 	 <el-form-item label="卡号" size="mini">
+						 	 	<el-input :value="userInfo.cardno" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 	 <el-form-item label="有效期" size="mini">
+						 	 	<el-input :value="userInfo.outdate" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 	 <el-form-item label="卡片序号" size="mini">
+						 	 	<el-input :value="userInfo.seq" :disabled="true" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 	 <el-form-item label="门禁密码" size="mini">
+						 	 	<el-input :value="userInfo.password" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 	 <el-form-item label="厂商" size="mini">
+						 	 	 <el-switch v-model="formInline.isvendor"></el-switch>
+						 	 </el-form-item>
+						 	 <el-form-item label="公司" size="mini">
+						 	 	<el-input value="" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 	 <el-form-item label="电话" size="mini">
+						 	 	<el-input value="" style="width: 100px;"></el-input>
+						 	 </el-form-item>
+						 </el-form> 
+					  </div>
+				  </el-col>
+				  <el-col :span="4">
+					  <div class="pic">
+						<img :src="'data:image/jpg;base64,'+userInfo.picBase64"/>
+					  </div>
+				  </el-col>
+				</el-row>
 			</div>
 		</div>
 	</div>
@@ -150,8 +161,8 @@ export default {
 			
 			this.$http.get("/employee/selectAll", {"params":params}).then(res => {
 			  if (res.status === 200) {
-					   this.tableData = res.data.list
-					   this.totalNumber = res.data.recordNumber
+				   this.tableData = res.data.list
+				   this.totalNumber = res.data.recordNumber
 			  }
 			})
 		}else{
@@ -185,6 +196,7 @@ export default {
 		this.userInfo = row
 		this.formInline.isvendor = row.isvendor === '1' ? true:false
 		console.log(this.formInline.isvendor)
+		console.log(this.userInfo.picBase64)
 		console.log(row)
 	},
     handleSelectionChange (val) {
@@ -259,5 +271,17 @@ export default {
 	margin-left:5px;
 	padding: 10px;
 	border:1px solid #DCDFE6;
+}
+
+.pic{
+	align:center; 
+}
+.pic img{
+	height: 160px;
+	width: 124px;
+	border-width: 0px;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	border-radius:10px;
 }
 </style>
