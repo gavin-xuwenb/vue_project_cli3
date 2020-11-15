@@ -137,7 +137,7 @@ export default {
 					_this.$http.get("/machine/getTime",{"params":{"tid":Number(item.add)}}).then(res => {
 						console.log(res)
 						if (res.status === 200) {
-							item.time = res.data
+							item.time = res.data.data
 						}else{
 							item.time = "Query Failed!"
 						}
