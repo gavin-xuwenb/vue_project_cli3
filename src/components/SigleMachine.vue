@@ -13,7 +13,7 @@
 			  未连接
 		  </span>
 		  <div class="openBtn">
-			<el-button type="primary" plain :disabled="!connect">远端开门</el-button>
+			<el-button type="primary" plain :disabled="!connect" @click="openDoor">远端开门</el-button>
 		  </div>
 		</div>
 	</div>
@@ -28,17 +28,7 @@ export default {
 			connect:false
 	    }
 	},
-	watch: {
-	 //  item: function(newVal){
-		// console.log("-----------------------"+newVal.ipadd);
-		// let params = {"ip":newVal.ipadd,"port":newVal.ipPort};
-		// this.$http.get("/machine/checkCon", {"params":params}).then(res => {
-		//   if (res.status === 200) {
-		// 	this.connect = res.data === 1?true:false
-		//   }
-		// })
-	 //  }
-	},
+
 	mounted:  function () {
 		if(this.item.ipadd && this.item.ipPort){
 			let params = {"ip":this.item.ipadd,"port":this.item.ipPort};
@@ -51,9 +41,25 @@ export default {
 		}
 		
 	},
-	computed:{
-	},
 	methods: {
+		openDoor () {
+			let _this = this;
+			this.$http.get("/machine/openDoor", {"params":{"tid":Number(_this.item.add)}}).then(res => {
+				if (res.status === 200) {
+					_this.$alert('完成！', '远程开门', {
+						 confirmButtonText: '确定',
+						 callback: action => {
+						 }
+					});
+				}else{
+					_this.$alert('失败！', '远程开门', {
+						 confirmButtonText: '确定',
+						 callback: action => {
+						 }
+					});
+				}
+			})
+		}
 	}
 }
 </script>
