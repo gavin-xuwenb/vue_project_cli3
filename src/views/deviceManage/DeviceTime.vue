@@ -43,7 +43,6 @@
 </template>
 
 <script>
-import { loadOptions } from '@/utils/loading.js'
 import {dateFormat} from '@/utils/dateUtil.js'
 export default {
 	name : "deviceTime",
@@ -129,15 +128,14 @@ export default {
 			
 			if(selection.length === 0){
 				_this.$alert('请选择要查询的机器', '设备时间查询', {
-					 confirmButtonText: '确定',
-					 callback: action => {
-					 }
+					 confirmButtonText: '确定'
 				});
 				return false
 			}else{
 				selection.forEach(function(item){
-					console.log(item)
+					console.log(item.add)
 					_this.$http.get("/machine/getTime",{"params":{"tid":Number(item.add)}}).then(res => {
+						console.log(res)
 						if (res.status === 200) {
 							item.time = res.data
 						}else{
@@ -152,15 +150,11 @@ export default {
 			_this.$http.get("/machine/setTime",{"params":{"tid":Number(row.add)}}).then(res => {
 				if (res.status === 200) {
 				    _this.$alert('完成！', '设备时间重设', {
-						 confirmButtonText: '确定',
-						 callback: action => {
-						 }
+						 confirmButtonText: '确定'
 				    });
 				}else{
 					_this.$alert('失败！', '设备时间重设', {
-						 confirmButtonText: '确定',
-						 callback: action => {
-						 }
+						 confirmButtonText: '确定'
 					});
 				}
 			})

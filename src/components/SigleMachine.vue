@@ -44,18 +44,15 @@ export default {
 	methods: {
 		openDoor () {
 			let _this = this;
-			this.$http.get("/machine/openDoor", {"params":{"tid":Number(_this.item.add)}}).then(res => {
+			console.log(_this.item.add)
+			_this.$http.get("/machine/openDoor", {"params":{"tid":Number(_this.item.add)}}).then(res => {
 				if (res.status === 200) {
 					_this.$alert('完成！', '远程开门', {
-						 confirmButtonText: '确定',
-						 callback: action => {
-						 }
+						 confirmButtonText: '确定'
 					});
 				}else{
 					_this.$alert('失败！', '远程开门', {
-						 confirmButtonText: '确定',
-						 callback: action => {
-						 }
+						 confirmButtonText: '确定'
 					});
 				}
 			})
