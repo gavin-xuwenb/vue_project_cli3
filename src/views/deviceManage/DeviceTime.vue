@@ -1,14 +1,17 @@
 <template>
 <div>
+	<div style="text-align: center;color: red;">
+		<span>当前系统时间:</span>
+		<span class="date">{{sysdate}}</span>
+	</div>
+	
 	<div class="wrap">
 		<div v-if="mList.length>0">		    
-			<el-button type="success">查询</el-button>
+			<el-button type="success" @click="timeQuery">查询</el-button>
 			<div style="margin-top: 20px;margin-bottom:20px;">
 				<el-table ref="multipleTable"
 					  tooltip-effect="dark"
-					  highlight-current-row
 					  max-height="450"
-
 					  :data="mList" border style="width: 100%;">
 					  <el-table-column
 						type="selection"
@@ -16,10 +19,10 @@
 					  </el-table-column>
 					  <el-table-column  prop="add" label="机号" width="100"></el-table-column>
 					  <el-table-column  prop="note00" label="名称"></el-table-column>
-					  <el-table-column  prop="" label="时间" width="250"></el-table-column>
+					  <el-table-column  prop="time" label="设备时间" width="250"></el-table-column>
 					  <el-table-column fixed="right" label="操作" width="100">
 						  <template slot-scope="scopeOne">
-							  <el-button type="success" plain @click="handleClick(scopeOne.row)">校时</el-button>
+							  <el-button type="success" plain @click="resetTime(scopeOne.row)">校时</el-button>
 						  </template>
 					  </el-table-column>
 				</el-table>			
@@ -41,10 +44,12 @@
 
 <script>
 import { loadOptions } from '@/utils/loading.js'
+import {dateFormat} from '@/utils/dateUtil.js'
 export default {
 	name : "deviceTime",
 	data () {
 		return {
+			sysdate: dateFormat.call(new Date(),"yyyy-MM-dd hh:mm:ss"),
 			machineInfo:null,
 			totalNumber:4,
 			pageSize:10,
@@ -89,11 +94,20 @@ export default {
 	},
 	created:  function () {
 		  this.$http.get("/machine/selectAll").then(res => {
-		    if (res.status === 200) {
+			if (res.status === 200) {
 			   this.mList = res.data.list
 			   this.totalNumber = this.mList.length;
-		    }
+			}
 		  })
+		  
+		  let _this = this;
+		  clearInterval(this.tt)
+		  this.tt = setInterval(function(){
+		  	_this.sysdate = dateFormat.call(new Date(),"yyyy-MM-dd hh:mm:ss")
+		  },1000)
+	},
+	beforeDestroy() {
+		clearInterval(this.tt)
 	},
 	methods: {
 		// 上一页,同时会触发  current-change事件
@@ -104,18 +118,53 @@ export default {
 		// nextClick (index) {
 		// 	console.log('next page'+index)
 		// },
-		handleClick (row) {
-		  console.log(row)
-		},
+		
 		//点击数字
 		currentChange (index) {
 			console.log('current page'+index)
 		},
-		//行点击事件clickRow(row,column,event){
-		// clickRow(row){
-		// 	this.machineInfo = row
-		// 	console.log(row)
-		// }
+		timeQuery () {
+			let _this = this;
+			let selection = _this.$refs.multipleTable.selection
+			
+			if(selection.length === 0){
+				_this.$alert('请选择要查询的机器', '设备时间查询', {
+					 confirmButtonText: '确定',
+					 callback: action => {
+					 }
+				});
+				return false
+			}else{
+				selection.forEach(function(item){
+					console.log(item)
+					_this.$http.get("/machine/getTime",{"params":{"tid":Number(item.add)}}).then(res => {
+						if (res.status === 200) {
+							item.time = res.data
+						}else{
+							item.time = "Query Failed!"
+						}
+					})
+				})
+			}
+		},
+		resetTime (row) {
+			let _this = this;
+			_this.$http.get("/machine/setTime",{"params":{"tid":Number(row.add)}}).then(res => {
+				if (res.status === 200) {
+				    _this.$alert('完成！', '设备时间重设', {
+						 confirmButtonText: '确定',
+						 callback: action => {
+						 }
+				    });
+				}else{
+					_this.$alert('失败！', '设备时间重设', {
+						 confirmButtonText: '确定',
+						 callback: action => {
+						 }
+					});
+				}
+			})
+		}
 	}
 }
 </script>
@@ -135,5 +184,9 @@ export default {
 	width:60%;
 	text-align:center;
     margin:10px auto;
+}
+
+.date {
+	margin: 1px 10px;
 }
 </style>
