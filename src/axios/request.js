@@ -42,8 +42,8 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(response => {
         // 如果返回的状态码为200，说明接口请求成功，可以正常拿到数据
         // 否则的话抛出错误
-        if (response.status === 200) {
-			console.log(response);
+        if (response.status === 200 || response.status === 500) {
+			console("response.status---->"+response.status)
             return Promise.resolve(response.data.data);
         } else {
             return Promise.reject(response);

@@ -195,9 +195,6 @@ export default {
 	clickRow(row){
 		this.userInfo = row
 		this.formInline.isvendor = row.isvendor === '1' ? true:false
-		console.log(this.formInline.isvendor)
-		console.log(this.userInfo.picBase64)
-		console.log(row)
 	},
     handleSelectionChange (val) {
       this.multipleSelection = val

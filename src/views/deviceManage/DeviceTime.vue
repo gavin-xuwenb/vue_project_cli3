@@ -19,7 +19,12 @@
 					  </el-table-column>
 					  <el-table-column  prop="add" label="机号" width="100"></el-table-column>
 					  <el-table-column  prop="note00" label="名称"></el-table-column>
-					  <el-table-column  prop="time" label="设备时间" width="250"></el-table-column>
+					  
+					  <el-table-column  label="设备时间" width="250">
+						  <template slot-scope="scopeOne">
+						  	 <span  :id='scopeOne.row.add' ></span>
+						  </template>
+					  </el-table-column>
 					  <el-table-column fixed="right" label="操作" width="100">
 						  <template slot-scope="scopeOne">
 							  <el-button type="success" plain @click="resetTime(scopeOne.row)">校时</el-button>
@@ -134,10 +139,14 @@ export default {
 			}else{
 				selection.forEach(function(item){
 					console.log(item.add)
-					_this.$http.get("/machine/getTime",{"params":{"tid":Number(item.add)}}).then(res => {
-						console.log(res)
+					let params = {
+						"tid":Number(item.add),
+						"ip":item.ipadd,
+						"port":item.ipPort
+					}
+					_this.$http.get("/machine/getTime",{"params":params}).then(res => {
 						if (res.status === 200) {
-							item.time = res.data.data
+							$("#"+item.add).text(res.data)
 						}else{
 							item.time = "Query Failed!"
 						}
@@ -147,7 +156,12 @@ export default {
 		},
 		resetTime (row) {
 			let _this = this;
-			_this.$http.get("/machine/setTime",{"params":{"tid":Number(row.add)}}).then(res => {
+			let params = {
+				"tid":Number(row.add),
+				"ip":row.ipadd,
+				"port":row.ipPort
+			}
+			_this.$http.get("/machine/setTime",{"params":params}).then(res => {
 				if (res.status === 200) {
 				    _this.$alert('完成！', '设备时间重设', {
 						 confirmButtonText: '确定'
