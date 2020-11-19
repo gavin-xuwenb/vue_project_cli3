@@ -1,11 +1,13 @@
 <template>
 	<div class="content">
+		
+		<!--
 		<span>当前系统时间:</span>
 		<span class="date">{{sysdate}}</span>
 		
 		
 		<el-button type="primary" @click="dialogVisible = true">矫正</el-button>
-		
+		-->
 		<el-dialog
 		  title="提示"
 		  :visible.sync="dialogVisible"

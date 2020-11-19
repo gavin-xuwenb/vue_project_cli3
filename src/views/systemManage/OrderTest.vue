@@ -1,7 +1,7 @@
 <template>
 	<div class="content">
-		<el-form :inline="true" ref="form" :model="form" label-width="150px">
-			<el-form-item label="输入指令">
+		<el-form :inline="true" ref="form" :model="form" label-width="250px">
+			<el-form-item label="输入指令" >
 		         <el-input v-model="form.cmdStr" ref="cmdStr" 
 					 maxlength="50" 
 					 show-word-limit></el-input>
@@ -72,7 +72,7 @@ export default {
 
 <style scoped="scoped">
 .el-input {
-	width: 200px;
+	width: 350px;
 }
 .text-red {
 	 color: red;
