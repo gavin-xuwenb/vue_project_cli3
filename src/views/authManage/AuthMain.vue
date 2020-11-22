@@ -185,7 +185,7 @@ export default {
 		  name:'實際設碼查詢',
 		  isChecked:false
 	  },{
-		  id:'M1F',
+		  id:'M1E',
 		  name:'權限群組設定',
 		  isChecked:false
 	  }],
