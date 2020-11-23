@@ -41,8 +41,8 @@
 			<div style="padding-top:-4px;padding-bottom:4px;">
 				<el-row>
 				  <el-button type="primary" :disabled="true">保存</el-button>
-				  <el-button type="primary">删除</el-button>
-				  <el-button type="primary">添加</el-button>
+				  <el-button type="primary" @click="delUser">删除</el-button>
+				  <el-button type="primary" @click="dialogVisible = true">添加</el-button>
 				</el-row>
 			</div>
 			<div v-if='userInfo!=null'>
@@ -115,6 +115,24 @@
 			</div>
 		</div>
 	</div>
+	<div>
+		<el-dialog title="添加账号" :visible.sync="dialogVisible" width="30%">
+		  <el-form ref="form" :model="addForm" label-width="80px">
+			<el-form-item label="账号">
+			  <el-input v-model="addForm.name1"></el-input>
+			</el-form-item>
+			<el-form-item label="密码">
+			  <el-input v-model="addForm.password1" type="password"></el-input>
+			</el-form-item>
+		  </el-form>
+		  <label style="color:red;">{{errorMsg}}</label>
+		  <span slot="footer" class="dialog-footer">
+			<el-button @click="dialogVisible = false">取 消</el-button>
+			<el-button type="primary" @click="addUser">确 定</el-button>
+		  </span>
+		</el-dialog>
+
+	</div>
 </div>
 </template>
 
@@ -124,7 +142,13 @@ export default {
   name : "authMain",
   data () {
     return {
+	  dialogVisible:false,
+	  errorMsg:'',
 	  selected:"1",
+	  addForm  : {
+		  name1:'',
+		  password1: ''
+	  },
       formInline: {
         inputData: '',
       },
@@ -282,14 +306,6 @@ export default {
 	  }]
     }
   },
-  
-  watch:{
-	  multipleTable1(n,o){
-		  this.$nextTick( ()=> {
-			  this.$refs.multipleTable1.toggleRowSelection(this.multipleTable1[0],true);
-		  })
-	  },
-  },
   created:  function () {
       const params = {
         pageNum: 1,
@@ -305,33 +321,108 @@ export default {
   },
   methods: {
     queryData: function() {
-		// if(this.formInline.inputData.trim() == ''){
-		// 	const params = {
-		// 	  pageNum: 1,
-		// 			pageSize:this.pageSize
-		// 	};
+		this.userInfo = null
+		this.formInline.inputData = '' //伪代码
+		if(this.formInline.inputData.trim() == ''){
+			const params = {
+			  pageNum: 1,
+			  pageSize:this.pageSize
+			};
 			
-		// 	this.$http.get("/employee/selectAll", {"params":params}).then(res => {
-		// 	  if (res.status === 200) {
-		// 		   this.tableData = res.data.list
-		// 		   this.totalNumber = res.data.recordNumber
-		// 	  }
-		// 	})
-		// }else{
-		// 	const params = {
-		// 	   cname:this.formInline.inputData,
-		// 	   pageNum: 1,
-		// 	   pageSize:this.pageSize
-		// 	};
+			this.$http.get("/systemUser/selectAll", {"params":params}).then(res => {
+			  if (res.status === 200) {
+				   this.tableData = res.data.list
+				   this.totalNumber = res.data.recordNumber
+			  }
+			})
+		}else{
+			const params = {
+			   cname:this.formInline.inputData,
+			   pageNum: 1,
+			   pageSize:this.pageSize
+			};
 			
-		// 	this.$http.get("/employee/getEmpByName", {params:params}).then(res => {
-		// 	  if (res.status === 200) {
-		// 			this.tableData = res.data.list
-		// 			this.totalNumber = res.data.recordNumber
-		// 	  }
-		// 	})
-		// }
+			this.$http.get("/systemUser/getEmpByName", {params:params}).then(res => {
+			  if (res.status === 200) {
+					this.tableData = res.data.list
+					this.totalNumber = res.data.recordNumber
+			  }
+			})
+		}
     },
+	addUser () {
+		this.errorMsg = ''
+		let reg1 = /^[A-Za-z][a-zA-Z0-9]{7,15}$/
+		let reg2 = /^[A-Za-z0-9][a-zA-Z0-9]{5,9}$/
+		if (!reg1.test(this.addForm.name1)){
+			this.errorMsg = '请输入账号:以字母开头8-16位字符，仅允许英文、数字（禁止空格）'
+			return false;
+		}
+		
+		if (!reg2.test(this.addForm.password1)){
+			this.errorMsg = '请输入密码:6-10位字符，仅允许英文、数字（禁止空格）'
+			return false;
+		}
+		
+		
+		const params = {
+			name:this.addForm.name1,
+			password:this.addForm.password1
+		};
+		
+		this.dialogVisible = false;
+		this.addForm.name1 =''
+		this.addForm.password1 = ''
+		this.$http.get("/systemUser/addUser", {params:params}).then(res => {
+		  if (res.status === 200 && res.data) {
+				this.$alert('添加成功!', '操作提示', {
+					confirmButtonText: '确定',
+					callback: action => {
+						this.queryData();
+					}
+				});
+		  }
+		})
+	},
+	
+	delUser () {
+		let self = this;
+		if(this.userInfo!=null){
+			this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+			}).then(() => {
+				self.delSubmit()
+			}).catch(() => {
+			  this.$message({
+				type: 'info',
+				message: '已取消删除'
+			  });          
+			});
+		}else{
+			this.$message({
+				type: 'info',
+				message: '请选择要删除的账号...'
+			}); 
+		}
+	},
+	delSubmit () {
+		console.log("开始删除。。。")
+		console.log(this.$http);
+		this.$http.get("/systemUser/delUser", {"params":{"seq":this.userInfo.seq}}).then(res => {
+			if (res.status === 200 && res.data) {
+				this.userInfo = null
+				this.queryData();
+			    this.$alert('删除成功!', '操作提示', {
+					confirmButtonText: '确定',
+					callback: action => {
+						
+					}
+				});
+			}
+		})
+	},
     handleClick (row) {
       console.log(row)
     },
