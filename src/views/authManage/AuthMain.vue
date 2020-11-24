@@ -377,7 +377,7 @@ export default {
 		  if (res.status === 200 && res.data) {
 				this.$alert('添加成功!', '操作提示', {
 					confirmButtonText: '确定',
-					callback: action => {
+					callback: () => {
 						this.queryData();
 					}
 				});
@@ -416,8 +416,7 @@ export default {
 				this.queryData();
 			    this.$alert('删除成功!', '操作提示', {
 					confirmButtonText: '确定',
-					callback: action => {
-						
+					callback: () => {
 					}
 				});
 			}

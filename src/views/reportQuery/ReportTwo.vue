@@ -1,7 +1,5 @@
 <template>
-	<div>
-		this is  special page
-	</div>
+	<div>two</div>
 </template>
 
 <script>

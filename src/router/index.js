@@ -47,8 +47,8 @@ const routes = [
 		path: 'deviceManage',
 		component: _import('deviceManage/DeviceMain')
 	},{
-		path: 'specialFunc',
-		component: _import('specialFunc/SpecialMain')
+		path: 'reportQuery',
+		component: _import('reportQuery/ReportMain')
 	},{
 		path: 'systemManage',
 		component: _import('systemManage/SystemMain')

@@ -7,7 +7,7 @@
 				<li><a class="active" href="javascript:void(0);" @click="userManage">人员管理</a></li>
 				<li><a href="javascript:void(0);" @click="deviceManage">设备管理</a></li>
 				<li><a href="javascript:void(0);" @click="authManage">权限管理</a></li>
-				<li><a href="javascript:void(0);" @click="specialFunc">特殊功能</a></li>
+				<li><a href="javascript:void(0);" @click="reportQuery">报表查询</a></li>
 				<li><a href="javascript:void(0);" @click="systemManage">系统管理</a></li>
 			</ul>	
 		</div>
@@ -40,8 +40,8 @@ export default {
 		authManage () {
 			this.$router.push('/layout/authManage')
 		},
-		specialFunc () {
-			this.$router.push('/layout/specialFunc')
+		reportQuery () {
+			this.$router.push('/layout/reportQuery')
 		},
 		systemManage () {
 			this.$router.push('/layout/systemManage')
