@@ -6,12 +6,12 @@
 	            <el-form :inline="true" :model="formInline" class="demo-form-inline">
 	               
 	                <el-form-item label="" size="mini">
-	                    <el-select v-model="formInline.region" style="width: 150px;">
-	                    <el-option label="员工编号" value="1"></el-option>
-	                    <el-option label="卡号" value="2"></el-option>
-						<el-option label="姓名" value="3"></el-option>
-						<el-option label="部门代码" value="4"></el-option>
-						<el-option label="部门名称" value="5"></el-option>
+	                    <el-select  v-model="selected" style="width: 150px;" >
+							<el-option label="员工编号" value="1"></el-option>
+							<el-option label="卡号" value="2"></el-option>
+							<el-option label="姓名" value="3"></el-option>
+							<el-option label="部门代码" value="4"></el-option>
+							<el-option label="部门名称" value="5"></el-option>
 	                    </el-select>
 	                </el-form-item>
 					<el-form-item label="" size="mini">
@@ -27,7 +27,7 @@
 					<div  class="content" style="margin-top:5px">
 				      <el-table ref="multipleTable"
 				          tooltip-effect="dark"
-						  max-height="450"
+						  max-height="380"
 						  @cell-click="clickRow" 
 						  highlight-current-row
 						  size="mini"
@@ -36,13 +36,6 @@
                           <el-table-column fixed prop="cname" label="姓名" width="100"></el-table-column>
 				          <el-table-column fixed prop="empno" label="员工编号" width="120"></el-table-column>
 				          <el-table-column prop="cardno" label="卡号" width="120"></el-table-column>
-				          <!--
-						  <el-table-column fixed="right" label="操作" width="220">
-				          <template slot-scope="scopeOne">
-				              <el-button @click="handleClick(scopeOne.row)" type="text">查看</el-button>
-				          </template>
-				          </el-table-column>
-						  -->
 				      </el-table>
 					</div>
 					<div v-show="showTable" class="pagination" >
@@ -128,9 +121,9 @@ export default {
     return {
       formInline: {
         inputData: '',
-        region: '',
 		isvendor:false
       },
+	  selected:"3",
 	  totalNumber:0,
 	  pageSize:20,
       tableData: [],
@@ -246,6 +239,7 @@ export default {
 .content{
    border:1px solid #DCDFE6;
    padding-bottom: 12px;
+   min-height:380px;
 }
 
 .pagination {
@@ -256,11 +250,11 @@ export default {
 .wrap {
 	display: -webkit-box;
 	width:100%;
-	min-height: 550px;
+	margin-top:-14px;
 }
 .left{
-	width:28%;
-	padding: 5px;
+	width:400px;
+	padding: 2px;
 	border:1px solid #DCDFE6;
 }
 .right {

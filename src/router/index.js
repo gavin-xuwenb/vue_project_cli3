@@ -42,7 +42,7 @@ const routes = [
 		component: _import('404')
 	},{
 		path: 'userManage',
-		component: _import('userManage/UserManage')
+		component: _import('userManage/UserMain')
 	},{
 		path: 'deviceManage',
 		component: _import('deviceManage/DeviceMain')
