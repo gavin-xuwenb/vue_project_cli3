@@ -7,11 +7,15 @@
 	               
 	                <el-form-item label="" size="mini">
 	                    <el-select  v-model="selected" style="width: 150px;" >
+							<!--
 							<el-option label="员工编号" value="1"></el-option>
 							<el-option label="卡号" value="2"></el-option>
+							 -->
 							<el-option label="姓名" value="3"></el-option>
+							<!--
 							<el-option label="部门代码" value="4"></el-option>
 							<el-option label="部门名称" value="5"></el-option>
+							-->
 	                    </el-select>
 	                </el-form-item>
 					<el-form-item label="" size="mini">
@@ -23,35 +27,38 @@
 	            </el-form>
 	        </div>
 			<div>
-				<div v-if="tableData.length>0">
-					<div  class="content" style="margin-top:5px">
-				      <el-table ref="multipleTable"
-				          tooltip-effect="dark"
-						  max-height="380"
-						  @cell-click="clickRow" 
-						  highlight-current-row
-						  size="mini"
-				          @selection-change="handleSelectionChange"
-				          :data="tableData" border style="width: 100%;">
-                          <el-table-column fixed prop="cname" label="姓名" width="100"></el-table-column>
-				          <el-table-column fixed prop="empno" label="员工编号" width="120"></el-table-column>
-				          <el-table-column prop="cardno" label="卡号" width="120"></el-table-column>
-				      </el-table>
-					</div>
-					<div v-show="showTable" class="pagination" >
-						<el-pagination
-						    background small
-							:page-size="pageSize"
-							@current-change="currentChange"
-						  layout="prev, pager, next, total" 
-						  :total="totalNumber">
-						</el-pagination>
-					</div>
+				<div  class="content" style="margin-top:5px">
+				  <el-table ref="multipleTable"
+					  tooltip-effect="dark"
+					  max-height="380"
+					  @cell-click="clickRow" 
+					  highlight-current-row
+					  size="mini"
+					  @selection-change="handleSelectionChange"
+					  :data="tableData" border style="width: 100%;">
+					  <el-table-column fixed prop="cname" label="姓名" width="100"></el-table-column>
+					  <el-table-column fixed prop="empno" label="员工编号" width="120"></el-table-column>
+					  <el-table-column prop="cardno" label="卡号" width="120"></el-table-column>
+				  </el-table>
 				</div>
-				
+				<div v-show="tableData.length>0" class="pagination" >
+					<el-pagination
+						background small
+						:page-size="pageSize"
+						@current-change="currentChange"
+					  layout="prev, pager, next, total" 
+					  :total="totalNumber">
+					</el-pagination>
+				</div>
 			</div>
 	    </div>
 	    <div class="right">
+			<div style="padding-top:-4px;padding-bottom:4px;">
+				<el-row>
+				  <el-button type="primary" :disabled="userInfo==null">保存</el-button>
+				</el-row>
+			</div>
+			
 			<div v-if='userInfo!=null'>
 				<el-row>
 				  <el-col :span="20">
@@ -91,7 +98,7 @@
 						 	 	<el-input :value="userInfo.password" style="width: 100px;"></el-input>
 						 	 </el-form-item>
 						 	 <el-form-item label="厂商" size="mini">
-						 	 	 <el-switch v-model="formInline.isvendor"></el-switch>
+						 	 	 <el-switch v-model="isvendor"></el-switch>
 						 	 </el-form-item>
 						 	 <el-form-item label="公司" size="mini">
 						 	 	<el-input value="" style="width: 100px;"></el-input>
@@ -108,6 +115,24 @@
 					  </div>
 				  </el-col>
 				</el-row>
+				
+				<div>
+					<el-select v-model="groupValue" placeholder="请选择">
+						<el-option
+					      v-for="item in groupList"
+					      :key="item.F102_01"
+					      :label="item.F102_02"
+					      :value="item.F102_01">
+					    </el-option>
+					</el-select>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					 <el-button type="danger">套用</el-button>
+					<div>
+						<div class="mlist" v-for="item in realList" :key='item.seq'>
+							<el-checkbox v-for="subitem in item.subList" :key='subitem.name' v-model="checkFlag">{{subitem.name}}</el-checkbox>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -115,64 +140,68 @@
 </template>
 
 <script>
-//import { loadOptions } from '@/utils/loading.js'
 export default {
   data () {
     return {
       formInline: {
-        inputData: '',
-		isvendor:false
+        inputData: ''
       },
 	  selected:"3",
 	  totalNumber:0,
-	  pageSize:20,
+	  pageSize:10,
+	  pageNum:1,
       tableData: [],
-      showTable: false,
-	  userInfo:null
+	  userInfo:null,
+	  isvendor:false,
+	  machineList:null,
+	  groupList:null,
+	  groupValue:'',
+	  checkFlag:false
     }
   },
+  computed:{
+	 realList:function(){
+	 	
+	 	this.machineList.forEach(function(item) {
+			let list = [];
+	 		// machineList 中，每条数据里面含有32个note+字段，每个有值的字段，代表一个读
+	 		for(let i=1;i<33;i++){
+	 			let column = 'note'+i
+	 			if(item[column]){
+	 				list.push({'seq':item.seq,'add':item.add,'name':item[column],'ipadd':item.ipadd,'ipPort':item.ipPort})
+	 			}
+	 		}
+			item.subList = list;
+	 	})
+	 	return this.machineList
+	 } 
+  },
   created:  function () {
-      const params = {
-        pageNum: 1,
-		pageSize:this.pageSize
-      };
-	  
-	  this.$http.get("/employee/selectAll", {"params":params}).then(res => {
-	    if (res.status === 200) {
-		   this.tableData = res.data.list
-		   this.totalNumber = res.data.recordNumber
-	    }
-	  })
+		this.machineList = JSON.parse(sessionStorage.getItem('machineList'))
+	  this.groupList = JSON.parse(sessionStorage.getItem('groupList'))
+      this.queryData()
   },
   methods: {
     queryData: function() {
-		if(this.formInline.inputData.trim() == ''){
-			const params = {
-			  pageNum: 1,
-					pageSize:this.pageSize
-			};
-			
-			this.$http.get("/employee/selectAll", {"params":params}).then(res => {
-			  if (res.status === 200) {
-				   this.tableData = res.data.list
-				   this.totalNumber = res.data.recordNumber
-			  }
-			})
-		}else{
-			const params = {
-			   cname:this.formInline.inputData,
-			   pageNum: 1,
-			   pageSize:this.pageSize
-			};
-			
-			this.$http.get("/employee/getEmpByName", {params:params}).then(res => {
-			  if (res.status === 200) {
-					this.tableData = res.data.list
-					this.totalNumber = res.data.recordNumber
-			  }
-			})
-		}
+		this.pageNum = 1
+		this.userInfo = null
+		this.handleQuery("/employee/selectListByName")
     },
+	
+	handleQuery (path) {
+		const params = {
+		   cname:this.formInline.inputData.trim(),
+		   pageNum: this.pageNum,
+		   pageSize:this.pageSize
+		};
+		this.$http.get(path, {params:params}).then(res => {
+			if (res.status === 200) {
+				this.tableData = res.data.list
+				this.totalNumber = res.data.recordNumber
+			}
+		})
+	},
+	
     handleClick (row) {
       console.log(row)
     },
@@ -187,44 +216,25 @@ export default {
     },
 	clickRow(row){
 		this.userInfo = row
-		this.formInline.isvendor = row.isvendor === '1' ? true:false
+		this.isvendor = row.isvendor === '1'?true:false
 	},
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
-    deleteRow (row) {
-      console.log('删除' + row.id + '行')
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        const cIndex = this.tableData.findIndex(item => item.id === row.id)
-        console.log('index====>' + cIndex)
-        this.tableData.splice(cIndex, 1)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
-    },
-		// 上一页,同时会触发  current-change事件
-		// prevClick (index) {
-		// 	console.log('pre page'+index)
-		// },
-		// // 下一页,同时会触发  current-change事件
-		// nextClick (index) {
-		// 	console.log('next page'+index)
-		// },
-		//点击数字
-		currentChange (index) {
-			console.log('current page'+index)
-		}
+	// 上一页,同时会触发  current-change事件
+	// prevClick (index) {
+	// 	console.log('pre page'+index)
+	// },
+	// // 下一页,同时会触发  current-change事件
+	// nextClick (index) {
+	// 	console.log('next page'+index)
+	// },
+	//点击数字
+	currentChange (index) {
+		this.pageNum = index
+		this.userInfo = null
+		this.handleQuery("/employee/selectListByName")
+	}
   }
 }
 </script>
@@ -253,7 +263,7 @@ export default {
 	margin-top:-14px;
 }
 .left{
-	width:400px;
+	width:350px;
 	padding: 2px;
 	border:1px solid #DCDFE6;
 }
@@ -274,5 +284,11 @@ export default {
 	border-right: 1px solid #ccc;
 	border-bottom: 1px solid #ccc;
 	border-radius:10px;
+}
+.mlist{
+	height: 25px;
+	border:1px solid green;
+	margin:5px 0;
+	padding: 6px 10px;
 }
 </style>

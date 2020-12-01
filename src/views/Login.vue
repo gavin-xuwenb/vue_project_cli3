@@ -46,6 +46,24 @@ export default {
             duration: 2000,
 			offset: 200
           })
+		  
+		  //查询机器列表
+		  this.$http.get("/machine/selectAll").then(res => {
+		    if (res.status === 200) {
+				this.$store.commit('updateMachine',res.data.list)
+				
+				sessionStorage.setItem('machineList',JSON.stringify(res.data.list))
+		    }
+		  })
+		  
+		  //查询群组列表
+		  this.$http.get("/group/selectAll").then(res => {
+		    if (res.status === 200) {
+		  		this.$store.commit('updateGroup',res.data.list)
+				sessionStorage.setItem('groupList',JSON.stringify(res.data.list))
+		    }
+		  })
+		  
 		  this.$router.push('/layout');
         } else {
           console.log('error submit!!')
