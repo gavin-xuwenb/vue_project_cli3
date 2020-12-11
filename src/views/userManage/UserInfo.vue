@@ -55,7 +55,8 @@
 	    <div class="right">
 			<div style="padding-top:-4px;padding-bottom:4px;">
 				<el-row>
-				  <el-button type="primary" :disabled="userInfo==null">保存</el-button>
+				  <el-button type="primary" :disabled="userInfo==null" @click="saveFn">存储资料</el-button>
+				  <el-button type="primary" :disabled="userInfo==null" @click="setAuth">权限设码</el-button>
 				</el-row>
 			</div>
 			
@@ -128,8 +129,8 @@
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					 <el-button type="danger">套用</el-button>
 					<div>
-						<div class="mlist" v-for="item in realList" :key='item.seq'>
-							<el-checkbox v-for="subitem in item.subList" :key='subitem.name' v-model="checkFlag">{{subitem.name}}</el-checkbox>
+						<div class="mlist" v-for="item in machineList" :key='item.seq'>
+							<el-checkbox v-for="subitem in item.subList" :key='subitem.name' v-model="subitem.isSelected">{{subitem.name}}</el-checkbox>
 						</div>
 					</div>
 				</div>
@@ -160,26 +161,24 @@ export default {
     }
   },
   computed:{
-	 realList:function(){
-	 	
-	 	this.machineList.forEach(function(item) {
-			let list = [];
-	 		// machineList 中，每条数据里面含有32个note+字段，每个有值的字段，代表一个读
-	 		for(let i=1;i<33;i++){
-	 			let column = 'note'+i
-	 			if(item[column]){
-	 				list.push({'seq':item.seq,'add':item.add,'name':item[column],'ipadd':item.ipadd,'ipPort':item.ipPort})
-	 			}
-	 		}
-			item.subList = list;
-	 	})
-	 	return this.machineList
-	 } 
   },
   created:  function () {
+	  var self = this;
 		this.machineList = JSON.parse(sessionStorage.getItem('machineList'))
-	  this.groupList = JSON.parse(sessionStorage.getItem('groupList'))
-      this.queryData()
+	    this.groupList = JSON.parse(sessionStorage.getItem('groupList'))
+		this.machineList.forEach(function(item) {
+			let list = [];
+			// machineList 中，每条数据里面含有32个note+字段，每个有值的字段，代表一个读
+			for(let i=1;i<33;i++){
+				let column = 'note'+i
+				if(item[column]){
+					list.push({'seq':item.seq,'add':item.add,'name':item[column],'ipadd':item.ipadd,'ipPort':item.ipPort})
+				}
+			}
+			//item.subList = list;
+			self.$set(item,"subList",list)
+		})
+        this.queryData()
   },
   methods: {
     queryData: function() {
@@ -187,7 +186,63 @@ export default {
 		this.userInfo = null
 		this.handleQuery("/employee/selectListByName")
     },
-	
+	saveFn:function(){
+		this.$confirm('确认存储资料?', '提示', {
+		  confirmButtonText: '确定',
+		  cancelButtonText: '取消',
+		  type: 'warning'
+		}).then(() => {
+			let str = ""
+			this.machineList.forEach(function(item,index) {
+				if(item.subList.length==1){
+					let cstr1 = item.subList[0].isSelected?"1":"0"
+					str += cstr1 + "0" 
+				}else if(item.subList.length==2){
+					let cstr1 = item.subList[0].isSelected?"1":"0"
+					let cstr2 = item.subList[1].isSelected?"2":"0"
+					str += (Number(cstr1) + Number(cstr2)) + "0"
+				}
+			})
+			console.log(str)
+			let doorsat1 = str.padEnd(128,'0');
+			const params = {
+			   seq:this.userInfo.seq,
+			   doorsat1:doorsat1,
+			};
+			console.log("before update doorsat1="+this.userInfo.doorsat1)
+			
+			this.$http.get('/employee/updateBydoor', {params:params}).then(res => {
+				if (res.status === 200) {
+					this.userInfo.doorsat1 = doorsat1
+					console.log("after update doorsat1="+this.userInfo.doorsat1)
+					this.$message({
+						type: 'success',
+						message: '保存成功!'
+					});
+				}
+			})
+		}).catch(() => {});
+	},
+	setAuth:function () {
+		this.$confirm('确认权限设码?', '提示', {
+		  confirmButtonText: '确定',
+		  cancelButtonText: '取消',
+		  type: 'warning'
+		}).then(() => {
+			const params = {
+			   seq:'',
+			   doorsat1:"",
+			};
+			this.$http.get('/employee/setAuth', {params:params}).then(res => {
+				if (res.status === 200) { 
+					this.$message({
+						type: 'success',
+						message: '設碼指令傳送完成!'
+					});
+				}
+			})
+		}).catch(() => {});
+	},
 	handleQuery (path) {
 		const params = {
 		   cname:this.formInline.inputData.trim(),
@@ -215,8 +270,46 @@ export default {
       }
     },
 	clickRow(row){
+		let self  = this
 		this.userInfo = row
 		this.isvendor = row.isvendor === '1'?true:false
+		
+		self.machineList.forEach(function(item,index) {
+			//计算出每个控制器开关的值0-3
+			let num = row.doorsat1.substr(2*index,1)
+			let list = []
+			//item.subList 最多两个长度
+			item.subList.forEach(function(item2,i) {
+				switch(num){
+					case "0":
+						self.$set(item2,"isSelected",false)
+						break;
+					case "1":
+						if(i==0) {
+							self.$set(item2,"isSelected",true)
+						}else{
+							self.$set(item2,"isSelected",false)
+						}
+						break;
+					case "2":
+						if(i==1) {
+							self.$set(item2,"isSelected",true)
+						}else{
+							self.$set(item2,"isSelected",false)
+						}
+						break;
+					case "3":
+						self.$set(item2,"isSelected",true)
+						break;
+					default:
+						break;
+				}
+			})	
+			//self.$set(self.machineList,index,item)
+		})
+		
+		
+		
 	},
     handleSelectionChange (val) {
       this.multipleSelection = val

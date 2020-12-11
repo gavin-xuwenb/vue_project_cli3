@@ -1,5 +1,5 @@
 <template>
-	<duv>实际设码查询</duv>
+	<div>实际设码查询</div>
 </template>
 
 <script>
