@@ -70,36 +70,36 @@
 						 	 </el-form-item>
 						 </el-form>
 						 
-						 <el-form :inline="true" :model="formInline" class="demo-form-inline">
+						 <el-form :inline="true" :model="form2" class="demo-form-inline">
 						 	 <el-form-item label="姓名" size="mini">
-						 	 	<el-input :value="userInfo.cname" style="width: 100px;"></el-input>
+						 	 	<el-input v-model="form2.cname" style="width: 100px;"></el-input>
 						 	 </el-form-item>
 						 	 <el-form-item label="员工编号" size="mini">
-						 	 	<el-input :value="userInfo.empno" style="width: 100px;"></el-input>
+						 	 	<el-input v-model="form2.empno" style="width: 100px;"></el-input>
 						 	 </el-form-item>
 						 	 <el-form-item label="部门代码" size="mini">
-						 	 	<el-input :value="userInfo.dept" style="width: 100px;"></el-input>
+						 	 	<el-input v-model="form2.dept" style="width: 100px;"></el-input>
 						 	 </el-form-item>
 						 	 <el-form-item label="部门名称" size="mini">
-						 	 	<el-input :value="userInfo.userfd4" style="width: 100px;"></el-input>
+						 	 	<el-input v-model="form2.userfd4" style="width: 100px;"></el-input>
 						 	 </el-form-item>
 						 </el-form>
 						 
-						 <el-form :inline="true" :model="formInline" class="demo-form-inline">
+						 <el-form :inline="true" :model="form2" class="demo-form-inline">
 						 	 <el-form-item label="卡号" size="mini">
-						 	 	<el-input :value="userInfo.cardno" style="width: 100px;"></el-input>
+						 	 	<el-input v-model="form2.cardno" style="width: 100px;"></el-input>
 						 	 </el-form-item>
 						 	 <el-form-item label="有效期" size="mini">
-						 	 	<el-input :value="userInfo.outdate" style="width: 100px;"></el-input>
+						 	 	<el-input v-model="form2.outdate" style="width: 120px;"></el-input>
 						 	 </el-form-item>
 						 	 <el-form-item label="卡片序号" size="mini">
-						 	 	<el-input :value="userInfo.seq" :disabled="true" style="width: 100px;"></el-input>
+						 	 	<el-input v-model="form2.seq" :disabled="true" style="width: 100px;"></el-input>
 						 	 </el-form-item>
 						 	 <el-form-item label="门禁密码" size="mini">
-						 	 	<el-input :value="userInfo.password" style="width: 100px;"></el-input>
+						 	 	<el-input v-model="form2.password" style="width: 100px;"></el-input>
 						 	 </el-form-item>
 						 	 <el-form-item label="厂商" size="mini">
-						 	 	 <el-switch v-model="isvendor"></el-switch>
+						 	 	 <el-switch v-model="form2.isvendor"></el-switch>
 						 	 </el-form-item>
 						 	 <el-form-item label="公司" size="mini">
 						 	 	<el-input value="" style="width: 100px;"></el-input>
@@ -118,7 +118,7 @@
 				</el-row>
 				
 				<div>
-					<el-select v-model="groupValue" placeholder="请选择">
+					<el-select v-model="form2.groupValue" placeholder="请选择">
 						<el-option
 					      v-for="item in groupList"
 					      :key="item.F102_01"
@@ -147,20 +147,28 @@ export default {
       formInline: {
         inputData: ''
       },
+	  form2:{
+		seq:'',
+		cname:'',
+		dept:'',
+		isvendor:'',
+		password:'',
+		cardno:'',
+		outdate:'',
+		userfd4:'',
+		empno:'',
+		doorsat1:''
+	  },
 	  selected:"3",
 	  totalNumber:0,
 	  pageSize:10,
 	  pageNum:1,
       tableData: [],
 	  userInfo:null,
-	  isvendor:false,
 	  machineList:null,
 	  groupList:null,
-	  groupValue:'',
 	  checkFlag:false
     }
-  },
-  computed:{
   },
   created:  function () {
 	  var self = this;
@@ -205,15 +213,14 @@ export default {
 			})
 			console.log(str)
 			let doorsat1 = str.padEnd(128,'0');
-			const params = {
-			   seq:this.userInfo.seq,
-			   doorsat1:doorsat1,
-			};
+			this.form2.doorsat1 = doorsat1;
+			
 			console.log("before update doorsat1="+this.userInfo.doorsat1)
 			
-			this.$http.get('/employee/updateBydoor', {params:params}).then(res => {
+			this.$http.get('/employee/updateBydoor', {params:this.form2}).then(res => {
 				if (res.status === 200) {
-					this.userInfo.doorsat1 = doorsat1
+					Object.assign(this.userInfo,this.form2)
+					this.userInfo.isvendor = this.userInfo.isvendor?"1":"0"
 					console.log("after update doorsat1="+this.userInfo.doorsat1)
 					this.$message({
 						type: 'success',
@@ -229,11 +236,7 @@ export default {
 		  cancelButtonText: '取消',
 		  type: 'warning'
 		}).then(() => {
-			const params = {
-			   seq:'',
-			   doorsat1:"",
-			};
-			this.$http.get('/employee/setAuth', {params:params}).then(res => {
+			this.$http.get('/employee/setAuth', {params:this.form2}).then(res => {
 				if (res.status === 200) { 
 					this.$message({
 						type: 'success',
@@ -272,7 +275,12 @@ export default {
 	clickRow(row){
 		let self  = this
 		this.userInfo = row
-		this.isvendor = row.isvendor === '1'?true:false
+		//this.form2 = [row]
+		for(let key in this.form2){
+			this.form2[key] = row[key]
+		}
+
+		this.form2.isvendor = row.isvendor === '1'?true:false
 		
 		self.machineList.forEach(function(item,index) {
 			//计算出每个控制器开关的值0-3
